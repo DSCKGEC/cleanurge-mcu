@@ -90,17 +90,9 @@ The best way to learn the following is to google each and everything!
     -   How to clone a repository, how to fork a repository, how to set upstreams
     -   Adding, committing, pulling, pushing changes to remote repositories
 
--   For backend:
-
-    -   [Reading this blog on overview of HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview)
-    -   [Reading this blog on APIs](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Introduction)
-    -   [Reading this blog on npm](https://www.freecodecamp.org/news/what-is-npm-a-node-package-manager-tutorial-for-beginners/)
-    -   Creating a free MongoDB cluster and fetching the connection URI. (you may read my gist on how to - [here](https://gist.github.com/singhayushh/426f10353a8051593828e92c139ebdbc))
-
--   For frontend:
-    -   Understanding the differences between HTML and EJS.
-    -   Using variables, if else, loops in EJS.
-    -   CSS !
+-   For IoT
+    -   C language
+    -   Tune in to the ioT and electronics channel in our discord server and learn more - [link](https://dsck.ml/discord)
 
 ### Installing
 
