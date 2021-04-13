@@ -78,8 +78,7 @@ Below are a few prerequisites and installation guides:
 
 #### Softwares needed
 
--   A web browser
--   Node and npm
+-   An IDE that supports Platform IO
 
 #### Knowledge needed
 
@@ -108,11 +107,12 @@ The best way to learn the following is to google each and everything!
 A step by step series of instructions that tell you how to get the project running locally is given below. Google every issue you face following the below instructions or just ask us in our Discord / WhatsApp group.
 
 -   Fork and clone the repository followed by opening the project in your text editor (with a terminal)
--   create a `.env` file, copy the contents from `.env.example` file to `.env`. Replace the values of `PORT`, `MONGO_URI` and `JWT_SECRET` with your own values.
--   In the terminal, make sure you are in the project directory.
--   run the command `npm install` or `npm i` - (you should learn when and why to use this command!)
--   run the command `npm start` - you will then receive a message mentioning of an address where the project is live
--   open the browser and browse to the above address!
+-  If you are working with VS code, just go to Extensions -> Install Platform IO
+-  Press the ![image](https://user-images.githubusercontent.com/55695557/114508611-324b9e80-9c52-11eb-85aa-d313bdef3640.png) button in the status bar and Open the project folder which starts with PIO...
+-  Main code lies in the ```src/``` foler inside each PIO project
+-  ```include/``` includes ```.h``` header files
+-  ```lib/``` contains the libraries exclusively added from outside
+-  ```platformio.ini``` contains the library dependencies, board properties and all, head on to their [website](https://platformio.org) for exact details on that ini files.
 
 ## Live demo
 
