@@ -108,7 +108,7 @@ A step by step series of instructions that tell you how to get the project runni
 
 -   Fork and clone the repository followed by opening the project in your text editor (with a terminal)
 -  If you are working with VS code, just go to Extensions -> Install Platform IO
--  Press the ![image](https://user-images.githubusercontent.com/55695557/114508611-324b9e80-9c52-11eb-85aa-d313bdef3640.png) button in the status bar and Open the project folder which starts with PIO...
+-  Press the <img display = "inline" width = 20px src = "https://user-images.githubusercontent.com/55695557/114508611-324b9e80-9c52-11eb-85aa-d313bdef3640.png" > button in the status bar and Open the project folder which starts with PIO...
 -  Main code lies in the ```src/``` foler inside each PIO project
 -  ```include/``` includes ```.h``` header files
 -  ```lib/``` contains the libraries exclusively added from outside
