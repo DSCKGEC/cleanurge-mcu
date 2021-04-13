@@ -120,8 +120,9 @@ A step by step series of instructions that tell you how to get the project runni
 
 ## Built with
 
-- [Express](https://expressjs.com/) - A NodeJS Framework
-- [MongoDB](https://www.mongodb.com/) - as the database
+- [Platform IO](https://platformio.org)
+- [Arduino Framework](https://arduino.cc)
+- [Firebase](https://firebase.google.com)
 
 ## Contributing
 
@@ -129,8 +130,8 @@ Please read [contributing.md](contributing.md) for details on our code of conduc
 
 ## Authors
 
-<a href="https://github.com/DSCKGEC/cleanurge-backend/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=DSCKGEC/cleanurge-backend" />
+<a href="https://github.com/DSCKGEC/cleanurge-mcu/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=DSCKGEC/cleanurge-mcu" />
 </a>
 
 ## License
