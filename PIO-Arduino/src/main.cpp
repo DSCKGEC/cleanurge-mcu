@@ -1,9 +1,14 @@
 #include <Arduino.h>
+#include <Ultrasonic.h>
+
+Ultrasonic ultrasonic1(12, 13);
 
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(9600);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  Serial.print("Sensor 01: ");
+  Serial.print(ultrasonic1.read()); // Prints the distance on the default unit (centimeters)
+  Serial.println("cm");
 }
