@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <Ultrasonic.h>
+#include <SoftwareSerial.h>
+#include <GPRS_Shield_Arduino.h>
 
 Ultrasonic ultrasonic1(12, 13);
 
