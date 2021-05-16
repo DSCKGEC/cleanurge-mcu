@@ -3,7 +3,7 @@
 #include <SoftwareSerial.h>
 #include <GPRS_Shield_Arduino.h>
 
-Ultrasonic ultrasonic1(12, 13);
+Ultrasonic ultrasonic1(11, 12);
 
 void setup() {
   Serial.begin(9600);
