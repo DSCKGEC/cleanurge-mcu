@@ -110,9 +110,12 @@ A step by step series of instructions that tell you how to get the project runni
 -  ```lib/``` contains the libraries exclusively added from outside
 -  ```platformio.ini``` contains the library dependencies, board properties and all, head on to their [website](https://platformio.org) for exact details on that ini files.
 
-## Live demo
+## TODO
 
-> TODO: deploy over heroku or netlify or some other platform with CI/CD support
+> Make an working prototype on Arduino
+> Make the design more economic
+> Improve/Add the logic
+> Optimise the coding
 
 ## Built with
 
