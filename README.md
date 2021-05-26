@@ -19,7 +19,7 @@ This is the repository for the microcontroller part of project- Cleanurge
 1. [Project structure](#project-structure)
 1. [Project roadmap](#project-roadmap)
 1. [Getting started](#getting-started)
-1. [Live demo](#live-demo)
+1. [TODO](#todo)
 1. [Built with](#built-with)
 1. [Contributing](#contributing)
 1. [Authors](#authors)
@@ -112,10 +112,10 @@ A step by step series of instructions that tell you how to get the project runni
 
 ## TODO
 
-> Make an working prototype on Arduino
-> Make the design more economic
-> Improve/Add the logic
-> Optimise the coding
+> * Make an working prototype on Arduino<br>
+> * Make the design more economic<br>
+> * Improve/Add the logic<br>
+> * Optimise the coding<br>
 
 ## Built with
 
