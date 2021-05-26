@@ -56,13 +56,9 @@ The idea is to have wireless beacons configured at various public bins to detect
 
 ## Project roadmap
 
-> TODO: Features to be updated
-
 The project currently does the following things.
 
-- Feature 1
-- Feature 2
-- Feature 3
+- just an empty source code, ready for your contribution ;)
 
 See below for our future steps.
 
