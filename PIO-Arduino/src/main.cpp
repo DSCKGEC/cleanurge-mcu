@@ -13,7 +13,6 @@ Ultrasonic ultrasonic1(TRIG, ECHO);
 
 /*=====Function Prototypes=====*/
 //All the function prototypes will be declared here
-void Update(void);
 
 
 /*=====Main Functions=====*/
