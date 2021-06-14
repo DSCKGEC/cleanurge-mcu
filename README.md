@@ -76,9 +76,10 @@ Below are a few prerequisites and installation guides:
 
 ### Prerequisites
 
-#### Softwares needed
+#### Resources needed
 
 -   An IDE that supports Platform IO
+-   Have a look at the cleanurge-backend routes documentation from [Cleaurge Backend Docs](https://cleanurge.herokuapp.com/docs)
 
 #### Knowledge needed
 
@@ -92,7 +93,7 @@ The best way to learn the following is to google each and everything!
 
 -   For IoT
     -   Embedded C/C++ language
-    -   Tune in to the IoT and electronics channel in our discord server and learn more - [link](https://dsck.ml/discord)
+    -   Tune in to the IoT and electronics channel in our discord server and learn more - [DSCK Discord](https://dsck.ml/discord)
 
 ### Installing
 
@@ -111,7 +112,7 @@ A step by step series of instructions that tell you how to get the project runni
 > * Make an working prototype on Arduino<br>
 > * Make the design more economic<br>
 > * Improve/Add the logic<br>
-> * Optimise the coding<br>
+> * Optimise for time and space usage<br>
 
 ## Built with
 

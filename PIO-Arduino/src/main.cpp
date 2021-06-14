@@ -13,6 +13,9 @@
 
 /*=====Globals=====*/
 Ultrasonic us1(TRIG, ECHO);
+
+String HTTP_HOST = "https://cleanurge.herokuapp.com/";
+int PORT = 80;
 int bin_height = 200;
 int waste_threshold = 90; //90%
 
@@ -22,16 +25,17 @@ uint8_t seconds = 0;//counts 0 to 59
 uint8_t minutes = 0;//counts 0 to 59
 uint8_t hours = 0;//counts 0 to 23
 uint8_t days = 0;//counts 0 to 6
+//variable to store HTTP request rate
+uint8_t http_timing = 1; //in hr
+uint8_t http_event = 0; //counter variable
+
+//variable to store debug message rate
+uint8_t debug_event = 0;  //counter variable
 //Overflow flags
 bool s_ovf;
 bool m_ovf;
 bool h_ovf;
-//variable to store HTTP request rate
-uint8_t http_event = 0;
-uint8_t http_timing = 1; //hr
-//variable to store debug message rate
-uint8_t debug_event = 0;
-
+bool booted;  //used to do tasks once on boot
 
 /*=====Function Prototypes=====*/
 //All the function prototypes will be declared here
@@ -56,13 +60,12 @@ void setup() {
   init_gprs();
   init_http();
   init_sensor();
-  //send data to show device is online
-  fetch_sensor_data();
-  send_data_http();
 }
 
 void loop() {
   //Put the logic for function loop()
+  /*===================Alerts (if any)=====================*/
+  //tick the timing functions
   tick_seconds();
   tick_minutes();
   tick_hours();
@@ -83,6 +86,7 @@ void loop() {
   if(debug_event == 1)
   {
     debug_event = 0;
+    //put debug messages here
     Serial.print("Waste level: ");
     Serial.println(waste_level);
     Serial.print("Seconds: ");
@@ -107,21 +111,25 @@ void init_http()
 }
 void init_sensor()
 {
-  //TODO
+  //TODO - add sensor setup logic (if any)
+  //sends data after boot to show device is online
+  fetch_sensor_data();
+  send_data_http();
 }
 int fetch_sensor_data()
 {
   //TODO - debug logic to fetch sensor reading
-  int cm_reading = us1.read(); //reading in centimeters
-  cm_reading = map(cm_reading, 200, 10, 0, 100);
-  return cm_reading;
+  int reading = us1.read(); //reading in centimeters
+  reading = map(reading, bin_height, 10,  //minimum is taken as 10cm
+                0, 100);  //gives result in percentage (integer)
+  return reading;
 }
 
 void send_http_alive()
 {
   //GET method (/api/beacon/ID)
   //Send the ID as param
-  //receive the waste threshold
+  //receive the waste threshold and update it
 }
 
 void send_data_http()
@@ -137,9 +145,10 @@ void send_data_http()
 void tick_seconds()
 {
   // updates every 1000ms or 1s
-  if(millis() - last_time >= 1000){
+  uint16_t diff = millis() - last_time;
+  if(diff >= 1000){
     last_time = millis();
-    seconds++;
+    seconds+= (diff/1000);
     if(seconds >= 60)
     {
       s_ovf = true;
