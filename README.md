@@ -46,7 +46,6 @@ The idea is to have wireless beacons configured at various public bins to detect
 /
   ├── .github/            github related files like PR templates, contribution guidelines
   ├── PIO-Arduino
-  ├── .env                environment variables used in the project
   ├── .gitignore          stores files and directories to be ignored in commits
   ├── LICENSE             the open source license
   ├── code_of_conduct.md  code of conduct for open source contribution
