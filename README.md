@@ -46,7 +46,6 @@ The idea is to have wireless beacons configured at various public bins to detect
 /
   ├── .github/            github related files like PR templates, contribution guidelines
   ├── PIO-Arduino
-  ├── .env                environment variables used in the project
   ├── .gitignore          stores files and directories to be ignored in commits
   ├── LICENSE             the open source license
   ├── code_of_conduct.md  code of conduct for open source contribution
@@ -76,9 +75,10 @@ Below are a few prerequisites and installation guides:
 
 ### Prerequisites
 
-#### Softwares needed
+#### Resources needed
 
 -   An IDE that supports Platform IO
+-   Have a look at the cleanurge-backend routes documentation from [Cleaurge Backend Docs](https://cleanurge.herokuapp.com/docs)
 
 #### Knowledge needed
 
@@ -92,7 +92,7 @@ The best way to learn the following is to google each and everything!
 
 -   For IoT
     -   Embedded C/C++ language
-    -   Tune in to the IoT and electronics channel in our discord server and learn more - [link](https://dsck.ml/discord)
+    -   Tune in to the IoT and electronics channel in our discord server and learn more - [DSCK Discord](https://dsck.ml/discord)
 
 ### Installing
 
@@ -111,7 +111,7 @@ A step by step series of instructions that tell you how to get the project runni
 > * Make an working prototype on Arduino<br>
 > * Make the design more economic<br>
 > * Improve/Add the logic<br>
-> * Optimise the coding<br>
+> * Optimise for time and space usage<br>
 
 ## Built with
 
