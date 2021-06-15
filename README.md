@@ -1,6 +1,6 @@
 # Cleanurge
 
-[![Contributors](https://img.shields.io/github/contributors/dsckgec/cleanurge-backend.svg)](https://github.com/dsckgec/cleanurge-backend/graphs/contributors) [![Forks](https://img.shields.io/github/forks/dsckgec/cleanurge-backend.svg)](https://github.com/dsckgec/cleanurge-backend/network/members) [![Issues](https://img.shields.io/github/issues/dsckgec/cleanurge-backend.svg)](https://github.com/dsckgec/cleanurge-backend/issues) [![Pull Request](https://img.shields.io/github/issues-pr-closed-raw/dsckgec/cleanurge-backend)](https://github.com/dsckgec/cleanurge-backend/pulls)
+[![Contributors](https://img.shields.io/github/contributors/dsckgec/cleanurge-mcu.svg)](https://github.com/dsckgec/cleanurge-mcu/graphs/contributors) [![Forks](https://img.shields.io/github/forks/dsckgec/cleanurge-mcu.svg)](https://github.com/dsckgec/cleanurge-mcu/network/members) [![Issues](https://img.shields.io/github/issues/dsckgec/cleanurge-mcu.svg)](https://github.com/dsckgec/cleanurge-mcu/issues) [![Pull Request](https://img.shields.io/github/issues-pr-closed-raw/dsckgec/cleanurge-mcu)](https://github.com/dsckgec/cleanurge-mcu/pulls)
 
 
 A scalable waste management system powered by IoT.
