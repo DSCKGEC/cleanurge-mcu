@@ -9,7 +9,10 @@
 #define ECHO 11
 #define TRIG 12
 #define BAUDRATE 9600
+#define RXPin 7
+#define TXPin 8
 
+GPRS gprs(TXPin, RXPin, BAUDRATE);
 
 /*=====Globals=====*/
 Ultrasonic us1(TRIG, ECHO);
