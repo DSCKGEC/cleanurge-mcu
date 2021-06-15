@@ -57,7 +57,8 @@ The idea is to have wireless beacons configured at various public bins to detect
 
 The project currently does the following things.
 
-- just an empty source code, ready for your contribution ;)
+- Timing Logic
+- Few empty functions
 
 See below for our future steps.
 
