@@ -12,9 +12,10 @@
 #define RXPin 7
 #define TXPin 8
 
+/*=====Globals=====*/
+
 GPRS gprs(TXPin, RXPin, BAUDRATE);
 
-/*=====Globals=====*/
 Ultrasonic us1(TRIG, ECHO);
 
 String HTTP_HOST = "https://cleanurge.herokuapp.com/";
