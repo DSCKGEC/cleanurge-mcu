@@ -3,6 +3,7 @@
 #include <Ultrasonic.h>
 #include <SoftwareSerial.h>
 #include <GPRS_Shield_Arduino.h>
+#include <ArduinoJson.h>
 
 /*=====Macros=====*/
 #define ID "238939abacdfe"  //Device ID
@@ -14,7 +15,11 @@
 
 /*=====Globals=====*/
 
-GPRS gprs(TXPin, RXPin, BAUDRATE);
+StaticJsonDocument<512> doc; 
+
+SoftwareSerial gprs_uart(RXPin, TXPin); 
+
+//GPRS gprs(TXPin, RXPin, BAUDRATE);
 
 Ultrasonic us1(TRIG, ECHO);
 
@@ -22,6 +27,8 @@ String HTTP_HOST = "https://cleanurge.herokuapp.com/";
 int PORT = 80;
 int bin_height = 200;
 int waste_threshold = 90; //90%
+String coordinates="22.99139°N,88.4482395°E";
+String sendtoserver;
 
 //timing variables
 unsigned long last_time = 0; //used to tick seconds, uses AVR Timer0
@@ -32,15 +39,17 @@ uint8_t days = 0;//counts 0 to 6
 //variable to store HTTP request rate
 uint8_t http_timing = 1; //in hr
 uint8_t http_event = 0; //counter variable
+uint8_t alive_timing=30; //in min
+uint8_t alive_event=0; //counter variable
 
 //variable to store debug message rate
 uint8_t debug_event = 0;  //counter variable
-//Overflow flags
+//w_ovf flags
 bool s_ovf;
 bool m_ovf;
 bool h_ovf;
 bool booted;  //used to do tasks once on boot
-
+bool w_ovf;
 /*=====Function Prototypes=====*/
 //All the function prototypes will be declared here
 void init_gprs();
@@ -48,15 +57,17 @@ void init_http();
 void init_sensor();
 int fetch_sensor_data();  //in cm
 void send_data_http();
+void send_http_alive();
 //counter logics
 void tick_seconds();
 void tick_minutes();
 void tick_hours();
 void tick_days();
-
+void ShowSerialData();
 /*=====Main Functions=====*/
 void setup() {
   //Serial Monitor
+  gprs_uart.begin(9600);
   Serial.begin(9600);
   //Setting up IOs - if any
 
@@ -78,12 +89,22 @@ void loop() {
   int waste_level = fetch_sensor_data();
 
   //Schedule to send sensor stats every 1hr
-  //checking if there is overlow of waste or not - comparing with variable "waste_threshold"
-  // overflow results in calling the send
-  if(http_event == http_timing || waste_level >= waste_threshold)
-  {
+  //checking if there is overlow of waste or not - comparing with variable "waste_threshold" 
+  if(!w_ovf)
+    w_ovf=waste_level >= waste_threshold;
+
+  // w_ovf results in calling the send
+  if(http_event == http_timing || w_ovf)
+  {   
     http_event = 0;//reset counter
     send_data_http();
+    w_ovf=false;
+  }
+  //send alive signal every 30 minutes
+  if(alive_event==alive_timing)
+  {
+    alive_event=0;
+    send_http_alive();
   }
 
   //debugging section
@@ -106,11 +127,58 @@ void loop() {
 /*=====User Functions go here=====*/
 void init_gprs()
 {
-  //TODO - add the GPRS setup logic here
+  gprs_uart.begin(BAUDRATE);
+  
+  if (gprs_uart.available())
+    Serial.write(gprs_uart.read());
+ 
+  gprs_uart.println("AT");
+  delay(3000);  
+
+  gprs_uart.println("AT+SAPBR=3,1,\"Contype\",\"GPRS\"");
+  ShowSerialData();
+
+  gprs_uart.println("AT+SAPBR=3,1,\"APN\",\"airtelgprs.com\"");//APN
+  ShowSerialData();
+
+  gprs_uart.println("AT+SAPBR=1,1");
+  ShowSerialData();
+ 
+  gprs_uart.println("AT+SAPBR=2,1");
+  ShowSerialData();
+  
 }
+
 void init_http()
 {
-  //TODO - add HTTP connection logic
+  int waste_level = fetch_sensor_data();
+
+  gprs_uart.println("AT+HTTPINIT");
+  ShowSerialData();
+
+  gprs_uart.println("AT+HTTPPARA=\"CID\",1");
+  ShowSerialData();
+
+  StaticJsonDocument<512> doc;
+  JsonObject object = doc.to<JsonObject>();
+  
+  object["deviceID"]=ID;
+  object["waste_level"]=waste_level;
+  object["coordinates"]=coordinates;
+  deserializeJson(doc, Serial);
+
+  serializeJson(doc,sendtoserver);
+
+  gprs_uart.println("AT+HTTPPARA=\"URL\",\"https://cleanurge.herokuapp.com\""); //Server address
+  ShowSerialData();
+ 
+  gprs_uart.println("AT+HTTPPARA=\"CONTENT\",\"application/json\"");
+  ShowSerialData();
+
+  gprs_uart.println(sendtoserver);
+  ShowSerialData();
+ 
+ 
   //Checkout https://cleanurge.herokuapp.com/docs/ for accessing the routes
 }
 void init_sensor()
@@ -138,9 +206,11 @@ void send_http_alive()
 
 void send_data_http()
 {
-  //TODO - send the location and the level of waste
-  //Checkout https://cleanurge.herokuapp.com/docs/ for accessing the routes
-
+  gprs_uart.println("AT+HTTPACTION=1");
+  ShowSerialData();
+ 
+  gprs_uart.println("AT+CIPSEND=0");
+  ShowSerialData();
   //PUT method (/api/beacon/ID)
   //Send level (and coordinate once on boot) in request
   //receive the OK status
@@ -175,7 +245,7 @@ void tick_minutes()
       minutes = 0;
     }
     //put task for every min. here
-
+    alive_event++;
   }
 }
 void tick_hours()
@@ -203,4 +273,11 @@ void tick_days()
     days = (days + 1) % 7;
   }
   //put tasks for every day here
+}
+
+void ShowSerialData()
+{
+  while (gprs_uart.available() != 0)
+    Serial.write(gprs_uart.read());
+  delay(1000);
 }
