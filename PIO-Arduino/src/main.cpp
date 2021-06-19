@@ -55,6 +55,7 @@ void init_http();
 void init_sensor();
 int fetch_sensor_data();  //in cm
 void send_data_http();
+send_http_alive();
 //counter logics
 void tick_seconds();
 void tick_minutes();
