@@ -3,6 +3,7 @@
 #include <Ultrasonic.h>
 #include <SoftwareSerial.h>
 #include <GPRS_Shield_Arduino.h>
+#include <ArduinoJson.h>
 
 /*=====Macros=====*/
 #define ID "238939abacdfe"  //Device ID
@@ -13,13 +14,17 @@
 #define TXPin 8
 
 /*=====Globals=====*/
-GPRS gprs(TXPin, RXPin, BAUDRATE);
+StaticJsonDocument<512> doc;
+SoftwareSerial gprs_uart(RXPin, TXPin);
+//GPRS gprs(TXPin, RXPin, BAUDRATE);
 Ultrasonic us1(TRIG, ECHO);
 
 String HTTP_HOST = "http://cleanurge.herokuapp.com/";
 int PORT = 80;
 int bin_height = 200;
 int waste_threshold = 90; //90%
+String coordinates = "22.99139°N,88.4482395°E";
+String sendtoserver;
 
 //timing variables
 unsigned long last_time = 0; //used to tick seconds, uses AVR Timer0
@@ -30,6 +35,8 @@ uint8_t days = 0;//counts 0 to 6
 //variable to store HTTP request rate
 uint8_t http_timing = 1; //in hr
 uint8_t http_event = 0; //counter variable
+uint8_t alive_timing = 30; //in min
+uint8_t alive_event = 0;   //counter variable
 
 //variable to store debug message rate
 uint8_t debug_event = 0;  //counter variable
@@ -87,7 +94,6 @@ void loop() {
   if(en_w_ovf && (waste_level >= waste_threshold))
   {
     w_ovf = true; //trigger flag
-    en_w_ovf = false; //disable interrupt
   }
   //Schedule to send sensor stats every 1hr
   // overflow results in calling the send
@@ -96,6 +102,13 @@ void loop() {
     http_event = 0;//reset counter
     send_data_http();
     w_ovf = false;  //clear interrupt flag
+    en_w_ovf = false; //disable interrupt
+  }
+  //send alive signal every 30 minutes
+  if (alive_event == alive_timing)
+  {
+    alive_event = 0;
+    send_http_alive();
   }
 
   //debugging section
@@ -189,7 +202,7 @@ void tick_minutes()
       minutes = 0;
     }
     //put task for every min. here
-
+    alive_event++;
   }
 }
 void tick_hours()
