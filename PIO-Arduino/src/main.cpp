@@ -13,12 +13,10 @@
 #define TXPin 8
 
 /*=====Globals=====*/
-
 GPRS gprs(TXPin, RXPin, BAUDRATE);
-
 Ultrasonic us1(TRIG, ECHO);
 
-String HTTP_HOST = "https://cleanurge.herokuapp.com/";
+String HTTP_HOST = "http://cleanurge.herokuapp.com/";
 int PORT = 80;
 int bin_height = 200;
 int waste_threshold = 90; //90%
@@ -40,6 +38,8 @@ bool s_ovf;
 bool m_ovf;
 bool h_ovf;
 bool booted;  //used to do tasks once on boot
+bool w_ovf;
+bool en_w_ovf;
 
 /*=====Function Prototypes=====*/
 //All the function prototypes will be declared here
@@ -56,6 +56,7 @@ void tick_days();
 
 /*=====Main Functions=====*/
 void setup() {
+  booted = true;
   //Serial Monitor
   Serial.begin(9600);
   //Setting up IOs - if any
@@ -77,13 +78,24 @@ void loop() {
   //checking the sensor data in every loop
   int waste_level = fetch_sensor_data();
 
-  //Schedule to send sensor stats every 1hr
+  //if overflow not enabled and waste level below threshold
+  if(!en_w_ovf && (waste_level < waste_threshold))
+    en_w_ovf = true;  //enable overflow
+  
   //checking if there is overlow of waste or not - comparing with variable "waste_threshold"
+  //only if overflow enabled
+  if(en_w_ovf && (waste_level >= waste_threshold))
+  {
+    w_ovf = true; //trigger flag
+    en_w_ovf = false; //disable interrupt
+  }
+  //Schedule to send sensor stats every 1hr
   // overflow results in calling the send
-  if(http_event == http_timing || waste_level >= waste_threshold)
+  if( http_event == http_timing || ( w_ovf && en_w_ovf ))
   {
     http_event = 0;//reset counter
     send_data_http();
+    w_ovf = false;  //clear interrupt flag
   }
 
   //debugging section
@@ -100,6 +112,8 @@ void loop() {
     Serial.print("Hours: ");
     Serial.println(hours);
   }
+  if(booted)
+    booted = false;
 }
 
 
