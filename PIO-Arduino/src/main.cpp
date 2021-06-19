@@ -217,7 +217,7 @@ void send_data_http()
   gprs_uart.println("AT+HTTPACTION=1");
   ShowSerialData();
  
-  gprs_uart.println("AT+CIPSEND=0");
+  gprs_uart.println("AT+HTTPREAD");
   ShowSerialData();
   //PUT method (/api/beacon/ID)
   //Send level (and coordinate once on boot) in request
