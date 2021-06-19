@@ -1,6 +1,6 @@
 # Cleanurge
 
-[![Contributors](https://img.shields.io/github/contributors/dsckgec/cleanurge-backend.svg)](https://github.com/dsckgec/cleanurge-backend/graphs/contributors) [![Forks](https://img.shields.io/github/forks/dsckgec/cleanurge-backend.svg)](https://github.com/dsckgec/cleanurge-backend/network/members) [![Issues](https://img.shields.io/github/issues/dsckgec/cleanurge-backend.svg)](https://github.com/dsckgec/cleanurge-backend/issues) [![Pull Request](https://img.shields.io/github/issues-pr-closed-raw/dsckgec/cleanurge-backend)](https://github.com/dsckgec/cleanurge-backend/pulls)
+[![Contributors](https://img.shields.io/github/contributors/dsckgec/cleanurge-mcu.svg)](https://github.com/dsckgec/cleanurge-mcu/graphs/contributors) [![Forks](https://img.shields.io/github/forks/dsckgec/cleanurge-mcu.svg)](https://github.com/dsckgec/cleanurge-mcu/network/members) [![Issues](https://img.shields.io/github/issues/dsckgec/cleanurge-mcu.svg)](https://github.com/dsckgec/cleanurge-mcu/issues) [![Pull Request](https://img.shields.io/github/issues-pr-closed-raw/dsckgec/cleanurge-mcu)](https://github.com/dsckgec/cleanurge-mcu/pulls)
 
 
 A scalable waste management system powered by IoT.
@@ -45,7 +45,7 @@ The idea is to have wireless beacons configured at various public bins to detect
 ```
 /
   ├── .github/            github related files like PR templates, contribution guidelines
-  ├── PIO-Arduino
+  ├── PIO-Arduino         This is the "project folder", Open this from PlatformIO (Home) > Open Project
   ├── .gitignore          stores files and directories to be ignored in commits
   ├── LICENSE             the open source license
   ├── code_of_conduct.md  code of conduct for open source contribution
@@ -57,17 +57,18 @@ The idea is to have wireless beacons configured at various public bins to detect
 
 The project currently does the following things.
 
+- Global Objects and Variables
 - Timing Logic
-- Few empty functions
+- Few functions
 
 See below for our future steps.
 
 - Platform IO based firmware for the microcontroller unit
 - A sensor to measure the level of waste in the garbage bins which will be accurate as well as economic
 - The units are to be solar powered to reduce the maintenance and energy cost.
-- Some GPS arrangement to fetch the location of the beacon
+- Some cheap arrangement to set the location of the beacon (without involving GPS)
 - An arrangement to supply internet connection to the beacons in a cheap and practical way
-- The data channel should be secure
+- The data channel should have some sort of security
 
 ## Getting started
 
@@ -78,7 +79,8 @@ Below are a few prerequisites and installation guides:
 
 #### Resources needed
 
--   An IDE that supports Platform IO
+-   An IDE that supports Platform IO (VS Code recommended)
+-   (Optional) It is possible to simulate the hardware in "Proteus" (No official guide provided by us)
 -   Have a look at the cleanurge-backend routes documentation from [Cleaurge Backend Docs](https://cleanurge.herokuapp.com/docs)
 
 #### Knowledge needed
@@ -95,7 +97,7 @@ The best way to learn the following is to google each and everything!
     -   Embedded C/C++ language
     -   Tune in to the IoT and electronics channel in our discord server and learn more - [DSCK Discord](https://dsck.ml/discord)
 
-### Installing
+### Installing and Working on the source code
 
 A step by step series of instructions that tell you how to get the project running locally is given below. Google every issue you face following the below instructions or just ask us in our Discord / WhatsApp group.
 
@@ -118,7 +120,6 @@ A step by step series of instructions that tell you how to get the project runni
 
 - [Platform IO](https://platformio.org)
 - [Arduino Framework](https://arduino.cc)
-- [Firebase](https://firebase.google.com)
 
 ## Contributing
 
