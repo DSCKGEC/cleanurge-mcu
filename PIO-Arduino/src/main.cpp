@@ -14,7 +14,6 @@
 #define TXPin 8
 
 /*=====Globals=====*/
-StaticJsonDocument<512> doc;
 SoftwareSerial gprs_uart(RXPin, TXPin);
 //GPRS gprs(TXPin, RXPin, BAUDRATE);
 Ultrasonic us1(TRIG, ECHO);
@@ -154,7 +153,6 @@ void init_gprs()
  
   gprs_uart.println("AT+SAPBR=2,1");
   ShowSerialData();
-  
 }
 
 void init_http()
