@@ -6,7 +6,6 @@
 #include <ArduinoJson.h>
 
 /*=====Macros=====*/
-#define ID "238939abacdfe"  //Device ID
 #define ECHO 11
 #define TRIG 12
 #define BAUDRATE 9600
@@ -20,6 +19,7 @@ Ultrasonic us1(TRIG, ECHO);
 
 String HTTP_HOST = "http://cleanurge.herokuapp.com/";
 int PORT = 80;
+String ID = "238939abacdfe"; //Device ID
 int bin_height = 200;
 int waste_threshold = 90; //90%
 String coordinates = "22.99139°N,88.4482395°E";
@@ -53,7 +53,7 @@ void init_gprs();
 void init_http();
 void init_sensor();
 int fetch_sensor_data();  //in cm
-void send_data_http();
+void send_data_http(int);
 void send_http_alive();
 //counter logics
 void tick_seconds();
@@ -61,6 +61,7 @@ void tick_minutes();
 void tick_hours();
 void tick_days();
 void ShowSerialData();
+char * charFromConstChar(const char *);
 /*=====Main Functions=====*/
 void setup() {
   booted = true;
@@ -101,7 +102,7 @@ void loop() {
   if( http_event == http_timing || ( w_ovf && en_w_ovf ))
   {
     http_event = 0;//reset counter
-    send_data_http();
+    send_data_http(waste_level);
     w_ovf = false;  //clear interrupt flag
     en_w_ovf = false; //disable interrupt
   }
@@ -136,8 +137,8 @@ void init_gprs()
 {
   gprs_uart.begin(BAUDRATE);
   
-  if (gprs_uart.available())
-    Serial.write(gprs_uart.read());
+  // if (gprs_uart.available())
+  //   Serial.write(gprs_uart.read());
  
   gprs_uart.println("AT"); 
 
@@ -160,42 +161,49 @@ void init_gprs()
 
 void init_http()
 {
+  StaticJsonDocument<512> doc; //initialising the JSON document as object
+
   //enabling the http mode
   gprs_uart.println("AT+HTTPINIT");
   ShowSerialData();
 
-  //removing the http:// part in the URL
+  //defining the carrier profile
   gprs_uart.println("AT+HTTPPARA=\"CID\",1");
   ShowSerialData();
 
-  StaticJsonDocument<512> doc;  //initialising the JSON document as object
-  JsonObject object = doc.to<JsonObject>();
-  
-  object["deviceID"]=ID;
-  //object["coordinates"]=coordinates;
-  deserializeJson(doc, Serial);
-  //changing the contents of the document
-  serializeJson(doc,sendtoserver);
-
-  //setting the URL to https://cleanurge.herokuapp.com
-  gprs_uart.println("AT+HTTPPARA=\"URL\",\"https://cleanurge.herokuapp.com\""); 
-  ShowSerialData();
   //setting the content type in HTTP header to application/json
   gprs_uart.println("AT+HTTPPARA=\"CONTENT\",\"application/json\"");
   ShowSerialData();
 
-  gprs_uart.println(sendtoserver);
+  //GET request to the server 
+  gprs_uart.println("AT+HTTPACTION=0");
   ShowSerialData();
- 
- 
-  //Checkout https://cleanurge.herokuapp.com/docs/ for accessing the routes
+
+  String route = "AT+HTTPPARA=\"URL\",\"http://cleanurge.herokuapp.com/api/beacon/" + ID + "\"";
+  //setting the URL to http://cleanurge.herokuapp.com and sending Get to /api/beacon/ID
+  gprs_uart.println(route);
+  ShowSerialData();
+
+  //reads data from server
+  gprs_uart.println("AT+HTTPREAD");
+
+  String s;
+  while (gprs_uart.available() != 0)
+    s += gprs_uart.read();
+  //Getting data from server
+  deserializeJson(doc, s);
+  JsonObject object = doc.to<JsonObject>();
+  coordinates = charFromConstChar(object["beacon"]["geo"]["coordinates"]);
+  waste_threshold = object["beacon"]["waste-threshold"];
+
+  gprs_uart.println("AT+HTTPTERM");
+
+  //Checkout http://cleanurge.herokuapp.com/docs/ for accessing the routes
 }
 void init_sensor()
 {
   //TODO - add sensor setup logic (if any)
   //sends data after boot to show device is online
-  fetch_sensor_data();
-  send_data_http();
 }
 int fetch_sensor_data()
 {
@@ -211,19 +219,34 @@ void send_http_alive()
   //GET method (/api/beacon/ID)
   //Send the ID as param
   //receive the waste threshold and update it
+  gprs_uart.println("AT+HTTPTERM");
 }
 
-void send_data_http()
+void send_data_http(int data)
 {
-  //start the http get session
-  gprs_uart.println("AT+HTTPACTION=1");
+  //start the http get session (GET method as of now)
+  gprs_uart.println("AT+HTTPACTION=0");
   ShowSerialData();
+
+  String route = "AT+HTTPPARA=\"URL\",\"http://cleanurge.herokuapp.com/api/beacon/" + ID + "/" + data + "\"";
+  //setting the URL to http://cleanurge.herokuapp.com and sending GET to /api/beacon/ID/waste_level
+  gprs_uart.println(route);
+
   //reads data from server
   gprs_uart.println("AT+HTTPREAD");
-  ShowSerialData();
+
+  StaticJsonDocument<256> doc;
+  String s;
+  while (gprs_uart.available() != 0)
+    s += gprs_uart.read();
+
+  deserializeJson(doc, s);
+  waste_threshold = doc["beacon"]["waste-threshold"];
+
   //PUT method (/api/beacon/ID)
   //Send level (and coordinate once on boot) in request
   //receive the OK status
+  gprs_uart.println("AT+HTTPTERM");
 }
 
 void tick_seconds()
@@ -284,9 +307,19 @@ void tick_days()
   }
   //put tasks for every day here
 }
-
 void ShowSerialData()
 {
   while (gprs_uart.available() != 0)
     Serial.write(gprs_uart.read());
+}
+char * charFromConstChar(const char * ip_string)
+{
+  int len = strlen(ip_string);
+  char * op_string = (char *)malloc(len+1);
+  for(int i = 0; i < len; i++)
+  {
+    op_string[i] = ip_string[i];
+  }
+  op_string[len] = '\0';
+  return op_string;
 }
