@@ -312,6 +312,7 @@ void ShowSerialData()
   while (gprs_uart.available() != 0)
     Serial.write(gprs_uart.read());
 }
+//converting constant character to character pointer to be able to access the coordinates
 char * charFromConstChar(const char * ip_string)
 {
   int len = strlen(ip_string);
