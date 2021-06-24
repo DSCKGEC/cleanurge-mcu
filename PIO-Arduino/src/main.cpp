@@ -139,8 +139,7 @@ void init_gprs()
   if (gprs_uart.available())
     Serial.write(gprs_uart.read());
  
-  gprs_uart.println("AT");
-  delay(3000);  
+  gprs_uart.println("AT"); 
 
   gprs_uart.println("AT+SAPBR=3,1,\"Contype\",\"GPRS\"");
   ShowSerialData();
@@ -285,5 +284,4 @@ void ShowSerialData()
 {
   while (gprs_uart.available() != 0)
     Serial.write(gprs_uart.read());
-  delay(1000);
 }
