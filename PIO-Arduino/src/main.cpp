@@ -141,42 +141,46 @@ void init_gprs()
  
   gprs_uart.println("AT"); 
 
+  //setting the connection type to GPRS
   gprs_uart.println("AT+SAPBR=3,1,\"Contype\",\"GPRS\"");
   ShowSerialData();
 
-  gprs_uart.println("AT+SAPBR=3,1,\"APN\",\"airtelgprs.com\"");//APN
+  //setting the APN to www since we are using a Vodafone Sim
+  gprs_uart.println("AT+SAPBR=3,1,\"APN\",\"www\"");//APN
   ShowSerialData();
 
+  //Enabling the GPRS
   gprs_uart.println("AT+SAPBR=1,1");
   ShowSerialData();
- 
+  
+  //Query if the connection is setup properly
   gprs_uart.println("AT+SAPBR=2,1");
   ShowSerialData();
 }
 
 void init_http()
 {
-  int waste_level = fetch_sensor_data();
-
+  //enabling the http mode
   gprs_uart.println("AT+HTTPINIT");
   ShowSerialData();
 
+  //removing the http:// part in the URL
   gprs_uart.println("AT+HTTPPARA=\"CID\",1");
   ShowSerialData();
 
-  StaticJsonDocument<512> doc;
+  StaticJsonDocument<512> doc;  //initialising the JSON document as object
   JsonObject object = doc.to<JsonObject>();
   
   object["deviceID"]=ID;
-  object["waste_level"]=waste_level;
-  object["coordinates"]=coordinates;
+  //object["coordinates"]=coordinates;
   deserializeJson(doc, Serial);
-
+  //changing the contents of the document
   serializeJson(doc,sendtoserver);
 
-  gprs_uart.println("AT+HTTPPARA=\"URL\",\"https://cleanurge.herokuapp.com\""); //Server address
+  //setting the URL to https://cleanurge.herokuapp.com
+  gprs_uart.println("AT+HTTPPARA=\"URL\",\"https://cleanurge.herokuapp.com\""); 
   ShowSerialData();
- 
+  //setting the content type in HTTP header to application/json
   gprs_uart.println("AT+HTTPPARA=\"CONTENT\",\"application/json\"");
   ShowSerialData();
 
@@ -211,9 +215,10 @@ void send_http_alive()
 
 void send_data_http()
 {
+  //start the http get session
   gprs_uart.println("AT+HTTPACTION=1");
   ShowSerialData();
- 
+  //reads data from server
   gprs_uart.println("AT+HTTPREAD");
   ShowSerialData();
   //PUT method (/api/beacon/ID)
