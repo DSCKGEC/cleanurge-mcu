@@ -161,7 +161,7 @@ void init_gprs()
 
 void init_http()
 {
-  StaticJsonDocument<512> doc; //initialising the JSON document as object
+  StaticJsonDocument<512> doc; //initialising the JSON document
 
   //enabling the http mode
   gprs_uart.println("AT+HTTPINIT");
@@ -179,7 +179,7 @@ void init_http()
   gprs_uart.println("AT+HTTPACTION=0");
   ShowSerialData();
 
-  String route = "AT+HTTPPARA=\"URL\",\"http://cleanurge.herokuapp.com/api/beacon/" + ID + "\"";
+  String route = "AT+HTTPPARA=\"URL\",\""+ HTTP_HOST + "/" + ID + "\"";
   //setting the URL to http://cleanurge.herokuapp.com and sending Get to /api/beacon/ID
   gprs_uart.println(route);
   ShowSerialData();
@@ -190,15 +190,16 @@ void init_http()
   String s;
   while (gprs_uart.available() != 0)
     s += gprs_uart.read();
-  //Getting data from server
+
+  //deserialize the JSON string
   deserializeJson(doc, s);
-  JsonObject object = doc.to<JsonObject>();
-  coordinates = charFromConstChar(object["beacon"]["geo"]["coordinates"]);
-  waste_threshold = object["beacon"]["waste-threshold"];
+  //update the data to the globals
+  coordinates = charFromConstChar(doc["beacon"]["geo"]["coordinates"]);
+  waste_threshold =doc["beacon"]["waste-threshold"];
 
   gprs_uart.println("AT+HTTPTERM");
 
-  //Checkout http://cleanurge.herokuapp.com/docs/ for accessing the routes
+  //Checkout http://cleanurge.herokuapp.com/docs/ for accessing the routFes
 }
 void init_sensor()
 {
@@ -228,7 +229,7 @@ void send_data_http(int data)
   gprs_uart.println("AT+HTTPACTION=0");
   ShowSerialData();
 
-  String route = "AT+HTTPPARA=\"URL\",\"http://cleanurge.herokuapp.com/api/beacon/" + ID + "/" + data + "\"";
+  String route = "AT+HTTPPARA=\"URL\",\""+ HTTP_HOST + "/" + ID + "/" + data + "\"";
   //setting the URL to http://cleanurge.herokuapp.com and sending GET to /api/beacon/ID/waste_level
   gprs_uart.println(route);
 
@@ -312,7 +313,8 @@ void ShowSerialData()
   while (gprs_uart.available() != 0)
     Serial.write(gprs_uart.read());
 }
-//converting constant character to character pointer to be able to access the coordinates
+//converting const char pointer to char pointer
+//to store and modify the value later
 char * charFromConstChar(const char * ip_string)
 {
   int len = strlen(ip_string);
