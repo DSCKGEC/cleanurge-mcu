@@ -6,7 +6,6 @@
 #include <ArduinoJson.h>
 
 /*=====Macros=====*/
-#define ID "238939abacdfe"  //Device ID
 #define ECHO 11
 #define TRIG 12
 #define BAUDRATE 9600
@@ -14,13 +13,13 @@
 #define TXPin 8
 
 /*=====Globals=====*/
-StaticJsonDocument<512> doc;
 SoftwareSerial gprs_uart(RXPin, TXPin);
 //GPRS gprs(TXPin, RXPin, BAUDRATE);
 Ultrasonic us1(TRIG, ECHO);
 
 String HTTP_HOST = "http://cleanurge.herokuapp.com/";
 int PORT = 80;
+String ID = "238939abacdfe"; //Device ID
 int bin_height = 200;
 int waste_threshold = 90; //90%
 String coordinates = "22.99139°N,88.4482395°E";
@@ -40,7 +39,7 @@ uint8_t alive_event = 0;   //counter variable
 
 //variable to store debug message rate
 uint8_t debug_event = 0;  //counter variable
-//Overflow flags
+//w_ovf flags
 bool s_ovf;
 bool m_ovf;
 bool h_ovf;
@@ -54,18 +53,20 @@ void init_gprs();
 void init_http();
 void init_sensor();
 int fetch_sensor_data();  //in cm
-void send_data_http();
+void send_data_http(int);
 void send_http_alive();
 //counter logics
 void tick_seconds();
 void tick_minutes();
 void tick_hours();
 void tick_days();
-
+void ShowSerialData();
+char * charFromConstChar(const char *);
 /*=====Main Functions=====*/
 void setup() {
   booted = true;
   //Serial Monitor
+  gprs_uart.begin(9600);
   Serial.begin(9600);
   //Setting up IOs - if any
 
@@ -101,7 +102,7 @@ void loop() {
   if( http_event == http_timing || ( w_ovf && en_w_ovf ))
   {
     http_event = 0;//reset counter
-    send_data_http();
+    send_data_http(waste_level);
     w_ovf = false;  //clear interrupt flag
     en_w_ovf = false; //disable interrupt
   }
@@ -134,19 +135,76 @@ void loop() {
 /*=====User Functions go here=====*/
 void init_gprs()
 {
-  //TODO - add the GPRS setup logic here
+  gprs_uart.begin(BAUDRATE);
+  
+  // if (gprs_uart.available())
+  //   Serial.write(gprs_uart.read());
+ 
+  gprs_uart.println("AT"); 
+
+  //setting the connection type to GPRS
+  gprs_uart.println("AT+SAPBR=3,1,\"Contype\",\"GPRS\"");
+  ShowSerialData();
+
+  //setting the APN to www since we are using a Vodafone Sim
+  gprs_uart.println("AT+SAPBR=3,1,\"APN\",\"www\"");//APN
+  ShowSerialData();
+
+  //Enabling the GPRS
+  gprs_uart.println("AT+SAPBR=1,1");
+  ShowSerialData();
+  
+  //Query if the connection is setup properly
+  gprs_uart.println("AT+SAPBR=2,1");
+  ShowSerialData();
 }
+
 void init_http()
 {
-  //TODO - add HTTP connection logic
-  //Checkout https://cleanurge.herokuapp.com/docs/ for accessing the routes
+  StaticJsonDocument<512> doc; //initialising the JSON document
+
+  //enabling the http mode
+  gprs_uart.println("AT+HTTPINIT");
+  ShowSerialData();
+
+  //defining the carrier profile
+  gprs_uart.println("AT+HTTPPARA=\"CID\",1");
+  ShowSerialData();
+
+  //setting the content type in HTTP header to application/json
+  gprs_uart.println("AT+HTTPPARA=\"CONTENT\",\"application/json\"");
+  ShowSerialData();
+
+  //GET request to the server 
+  gprs_uart.println("AT+HTTPACTION=0");
+  ShowSerialData();
+
+  String route = "AT+HTTPPARA=\"URL\",\""+ HTTP_HOST + "/" + ID + "\"";
+  //setting the URL to http://cleanurge.herokuapp.com and sending Get to /api/beacon/ID
+  gprs_uart.println(route);
+  ShowSerialData();
+
+  //reads data from server
+  gprs_uart.println("AT+HTTPREAD");
+
+  String s;
+  while (gprs_uart.available() != 0)
+    s += gprs_uart.read();
+
+  //deserialize the JSON string
+  deserializeJson(doc, s);
+  //update the data to the globals
+  coordinates = charFromConstChar(doc["beacon"]["geo"]["coordinates"]);
+  waste_threshold =doc["beacon"]["waste-threshold"];
+
+  gprs_uart.println("AT+HTTPTERM");
+
+  //Checkout http://cleanurge.herokuapp.com/docs/ for accessing the routFes
 }
 void init_sensor()
 {
   //TODO - add sensor setup logic (if any)
   //sends data after boot to show device is online
-  fetch_sensor_data();
-  send_data_http();
 }
 int fetch_sensor_data()
 {
@@ -162,16 +220,34 @@ void send_http_alive()
   //GET method (/api/beacon/ID)
   //Send the ID as param
   //receive the waste threshold and update it
+  gprs_uart.println("AT+HTTPTERM");
 }
 
-void send_data_http()
+void send_data_http(int data)
 {
-  //TODO - send the location and the level of waste
-  //Checkout https://cleanurge.herokuapp.com/docs/ for accessing the routes
+  //start the http get session (GET method as of now)
+  gprs_uart.println("AT+HTTPACTION=0");
+  ShowSerialData();
+
+  String route = "AT+HTTPPARA=\"URL\",\""+ HTTP_HOST + "/" + ID + "/" + data + "\"";
+  //setting the URL to http://cleanurge.herokuapp.com and sending GET to /api/beacon/ID/waste_level
+  gprs_uart.println(route);
+
+  //reads data from server
+  gprs_uart.println("AT+HTTPREAD");
+
+  StaticJsonDocument<256> doc;
+  String s;
+  while (gprs_uart.available() != 0)
+    s += gprs_uart.read();
+
+  deserializeJson(doc, s);
+  waste_threshold = doc["beacon"]["waste-threshold"];
 
   //PUT method (/api/beacon/ID)
   //Send level (and coordinate once on boot) in request
   //receive the OK status
+  gprs_uart.println("AT+HTTPTERM");
 }
 
 void tick_seconds()
@@ -231,4 +307,22 @@ void tick_days()
     days = (days + 1) % 7;
   }
   //put tasks for every day here
+}
+void ShowSerialData()
+{
+  while (gprs_uart.available() != 0)
+    Serial.write(gprs_uart.read());
+}
+//converting const char pointer to char pointer
+//to store and modify the value later
+char * charFromConstChar(const char * ip_string)
+{
+  int len = strlen(ip_string);
+  char * op_string = (char *)malloc(len+1);
+  for(int i = 0; i < len; i++)
+  {
+    op_string[i] = ip_string[i];
+  }
+  op_string[len] = '\0';
+  return op_string;
 }
