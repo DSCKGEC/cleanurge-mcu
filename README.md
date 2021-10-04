@@ -124,6 +124,7 @@ A step by step series of instructions that tell you how to get the project runni
 ## Contributing
 
 Please read [contributing.md](contributing.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Your PRs will only be reviewed on Sundays only.
 
 ## Authors
 
